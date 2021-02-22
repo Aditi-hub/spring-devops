@@ -10,7 +10,7 @@
 	
 	<groupId>spring-devops</groupId>
 	<artifactId>spring-devops</artifactId>
-	<version>0.0.8-SNAPSHOT</version>
+	<version>0.0.8</version>
 	<packaging>war</packaging>
 	<name>spring-devops</name>
 	<description>Devops</description>
@@ -34,7 +34,7 @@
 	  <connection>scm:git:git@github.com:Aditi-hub/spring-devops.git</connection>
 	  <developerConnection>scm:git:git@github.com:Aditi-hub/spring-devops.git</developerConnection>
 	  <url>git@github.com:Aditi-hub/spring-devops.git</url>
-	  <tag>HEAD</tag>
+	  <tag>v0.0.8</tag>
 	</scm>
 	<dependencies>
 		<dependency>
