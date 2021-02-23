@@ -7,23 +7,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity //persistance class
-@Table(name="newproducts")
+@Entity // persistance class
+@Table(name = "newproducts")
 public class Product {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO) //id's auto generated
+	@GeneratedValue(strategy = GenerationType.AUTO) // id's auto generated
 	private Integer productId;
-	
+
 	private String productName;
-	
+
 	private Double price;
-	
+
 	private String description;
-	
+
 	public Product() {
-		// TODO Auto-generated constructor stub
-		
+
 	}
 
 	public Product(Integer productId, String productName, Double price, String description) {
@@ -64,6 +63,5 @@ public class Product {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	
+
 }
