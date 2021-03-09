@@ -1,7 +1,7 @@
 node {
    def mvnHome
    stage('Prepare') {
-      git url: 'https://github.com/aamir85284/spring-devops.git', branch: 'develop'
+      git url: 'https://github.com/Aditi-hub/spring-devops.git', branch: 'develop'
       mvnHome = tool 'maven'
    }
    stage('Build') {
@@ -12,7 +12,7 @@ node {
       }
    }
    stage('Unit Test') {
-      junit '*/target/surefire-reports/TEST-.xml'
+      junit '**/target/surefire-reports/TEST-*.xml'
       archive 'target/*.jar'
    }
    stage('Integration Test') {
@@ -29,23 +29,10 @@ node {
          bat(/"${mvnHome}\bin\mvn" sonar:sonar/)
       }
    }
- stage('Build Docker Image') {
-       if (isUnix()) {
-         sh "'${mvnHome}/bin/mvn' docker"
-      } else {
-         bat(/"${mvnHome}\bin\mvn" docker/)
-      }
-    steps {
-       sh '.mvn docker'
-    }
+   stage('Deploy') {
+       sh 'curl -u jenkins:jenkins -T target/**.war "http://localhost:8080/manager/text/deploy?path=/spring-devops&update=true"'
    }
-   stage('Push Docker Image') {
-    environment {
-        DOCKER_HUB_LOGIN = credentials('docker--hub')
-    }
-    steps {
-    sh 'docker login --username=$DOCKER_HUB_LOGIN_USER --password=$DOCKER_HUB_LOGIN_PSW'
-    sh './mvnw dockerPush'
-    }
+   stage("Smoke Test"){
+       sh "curl --retry-delay 10 --retry 5 http://localhost:8080/spring-devops"
    }
 }
