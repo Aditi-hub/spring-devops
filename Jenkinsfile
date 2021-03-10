@@ -53,3 +53,4 @@ stage("Docker push") {
 		sh "docker push aditi-hub/spring-devops:${BUILD_TIMESTAMP}"
 	}
 }
+}
