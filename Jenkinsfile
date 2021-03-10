@@ -1,7 +1,7 @@
 node {
 def mvnHome
 stage('Prepare') {
-git url: 'https://github.com/Aditi-hub/spring-devops.git';, branch: 'develop'
+git url: 'https://github.com/Aditi-hub/spring-devops.git', branch: 'develop'
 mvnHome = tool 'maven'
 }
 stage('Build') {
