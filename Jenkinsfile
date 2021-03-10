@@ -45,13 +45,13 @@ bat(/"${mvnHome}\bin\mvn" sonar:sonar/)
 }
 
 stage('Push Docker image') {
-steps {
-echo "-=- push Docker image -=-"
-withDockerRegistry([ credentialsId: "${ORG_NAME}-docker-hub", url: "" ]) {
-sh "docker push ${ORG_NAME}/${APP_NAME}:${APP_VERSION}"
-sh "docker tag ${ORG_NAME}/${APP_NAME}:${APP_VERSION} ${ORG_NAME}/${APP_NAME}:latest"
-}
-}
-}
-}
+	steps {
+				echo "-=- push Docker image -=-"
+				withDockerRegistry([ credentialsId: "${ORG_NAME}-docker-hub", url: "" ]) {
+				sh "docker push ${ORG_NAME}/${APP_NAME}:${APP_VERSION}"
+				sh "docker tag ${ORG_NAME}/${APP_NAME}:${APP_VERSION} ${ORG_NAME}/${APP_NAME}:latest"
+			}
+		}
+	}
+
 
