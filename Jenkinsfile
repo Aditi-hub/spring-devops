@@ -1,57 +1,55 @@
 node {
 def mvnHome
 stage('Prepare') {
-git url: 'https://github.com/Aditi-hub/spring-devops.git', branch: 'develop'
-mvnHome = tool 'maven'
+	git url: 'https://github.com/Aditi-hub/spring-devops.git', branch: 'develop'
+	mvnHome = tool 'maven'
 }
+
 stage('Build') {
-if (isUnix()) {
-sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
-} else {
-bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
-}
-}
-
-stage('Build Docker image') {
-steps {
-echo "-=- build Docker image -=-"
-sh "docker build -t ${ORG_NAME}/${APP_NAME}:${APP_VERSION} -t ${ORG_NAME}/${APP_NAME}:latest ."
-}
+	if (isUnix()) {
+		sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+	} else {
+		bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
+	}
 }
 
-stage('Run Docker image') {
-steps {
-echo "-=- run Docker image -=-"
-sh "docker run --name ${TEST_CONTAINER_NAME} --detach --rm --network ci --expose 6300 --env JAVA_OPTS='-javaagent:/jacocoagent.jar=output=tcpserver,address=*,port=6300' ${ORG_NAME}/${APP_NAME}:latest"
-}
-}
+
 stage('Unit Test') {
-junit '**/target/surefire-reports/TEST-*.xml'
-archive 'target/*.jar'
+	junit '**/target/surefire-reports/TEST-*.xml'
+	archive 'target/*.jar'
 }
 stage('Integration Test') {
-if (isUnix()) {
-sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean verify"
-} else {
-bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean verify/)
-}
+	if (isUnix()) {
+		sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean verify"
+	} else {
+		bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean verify/)
+	}
 }
 stage('Sonar') {
-if (isUnix()) {
-sh "'${mvnHome}/bin/mvn' sonar:sonar"
-} else {
-bat(/"${mvnHome}\bin\mvn" sonar:sonar/)
-}
+	if (isUnix()) {
+		sh "'${mvnHome}/bin/mvn' sonar:sonar"
+	} else {
+		bat(/"${mvnHome}\bin\mvn" sonar:sonar/)
+	}
 }
 
-stage('Push Docker image') {
+stage("Docker build") {
 	steps {
-				echo "-=- push Docker image -=-"
-				withDockerRegistry([ credentialsId: "${ORG_NAME}-docker-hub", url: "" ]) {
-				bat "docker push ${ORG_NAME}/${APP_NAME}:${APP_VERSION}"
-				bat "docker tag ${ORG_NAME}/${APP_NAME}:${APP_VERSION} ${ORG_NAME}/${APP_NAME}:latest"
-			}
+		sh "docker build -t aditi-hub/spring-devops:${BUILD_TIMESTAMP} ."
+	}
+}
+
+stage("Docker login") {
+	steps {
+		withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'aditi-hub',
+		usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+		sh "docker login --username $USERNAME --password $PASSWORD"
 		}
 	}
 }
 
+stage("Docker push") {
+	steps {
+		sh "docker push aditi-hub/spring-devops:${BUILD_TIMESTAMP}"
+	}
+}
